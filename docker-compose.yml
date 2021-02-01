@@ -1,0 +1,57 @@
+version: '3.3'
+volumes:
+  mysql_production:
+  personal_site_bundle:
+services:
+  db_mysql:
+    image: mysql:5.7
+    container_name: site_vurokrazia_backend_mysql
+    restart: on-failure:3
+    volumes:
+      - mysql_production:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${DB_DATABASE}
+      MYSQL_USER: ${DB_USER}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+    ports:
+      - "3304:3306"
+  backend_personal_site:
+    container_name: backend_personal_site
+    restart: on-failure:3
+    build: 
+      context: ./personal_site/
+      dockerfile: Dockerfile
+    volumes:
+      - ./personal_site:/home/src/
+      #- personal_site_bundle:/usr/local/bundle
+    ports:
+      - "3007:3000"
+    depends_on:
+      - db_mysql
+    environment:
+      RAILS_ENV: "production"
+      URL_BASE: ${PERSONAL_SITE_URL}
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_HOST: ${DB_HOST}
+      RAILS_PORT: ${PORT}
+      SECRET_KEY_BASE: ${SECRET_KEY_BASE}
+      SERVICE: ${SERVICE}
+      ACCESS_KEY_ID: ${ACCESS_KEY_ID}
+      SECRET_ACCESS_KEY: ${SECRET_ACCESS_KEY}
+      REGION: ${REGION}
+      BUCKET: ${BUCKET}
+      CLOUDFRONT_BUCKET: ${CLOUDFRONT_BUCKET}
+  personal_site_administrador:
+    container_name: blog_administrador
+    restart: on-failure:3
+    build:
+      dockerfile: Dockerfile
+      context: ./personal_site_administrador/
+    volumes:
+      - "./personal_site_administrador:/app/"
+    ports:
+      - "8080:8080"
+    depends_on:
+      - backend_personal_site

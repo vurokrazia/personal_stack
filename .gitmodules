@@ -1,0 +1,6 @@
+[submodule "personal_site"]
+	path = personal_site
+	url = git@github.com:vurokrazia/personal_site.git
+[submodule "personal_site_administrador"]
+	path = personal_site_administrador
+	url = git@github.com:vurokrazia/personal_site_administrador.git
